@@ -4,14 +4,15 @@ from priority_engine import calculate_priority, get_priority_level
 from ai_explainer import (
     explain_topic,
     generate_study_plan,
-    generate_recommendations
+    generate_recommendations,
+    generate_revision
 )
 from database import add_task, get_tasks, mark_completed
 
 
-# ==========================================
-# PAGE CONFIGURATION
-# ==========================================
+# --------------------------------------------------
+# PAGE CONFIG
+# --------------------------------------------------
 
 st.set_page_config(
     page_title="CampusAssist AI",
@@ -20,9 +21,9 @@ st.set_page_config(
 )
 
 
-# ==========================================
-# LOAD TASKS FROM DATABASE
-# ==========================================
+# --------------------------------------------------
+# LOAD TASKS
+# --------------------------------------------------
 
 tasks = get_tasks()
 
@@ -35,39 +36,35 @@ tasks.sort(
 )
 
 
-# ==========================================
-# HEADER
-# ==========================================
-
-st.title("🎓 CampusAssist AI")
-st.caption("AI-Powered Academic Assistant for Students")
-
-st.divider()
-
-
-# ==========================================
+# --------------------------------------------------
 # SIDEBAR
-# ==========================================
+# --------------------------------------------------
 
-st.sidebar.title("📚 CampusAssist AI")
+st.sidebar.title("🎓 CampusAssist AI")
 
 menu = st.sidebar.radio(
     "Navigate",
     [
         "🏠 Dashboard",
+        "📊 Analytics",
         "➕ Add Task",
         "📅 Study Planner",
         "🤖 AI Explainer",
-        "💡 AI Recommendations"
+        "💡 AI Recommendations",
+        "📝 Quick Revision"
     ]
 )
 
 
-# ==========================================
+# ==================================================
 # DASHBOARD
-# ==========================================
+# ==================================================
 
 if menu == "🏠 Dashboard":
+
+    st.title("🎓 CampusAssist AI")
+    st.caption("AI-Powered Academic Assistant for Students")
+    st.divider()
 
     st.header("📊 Student Dashboard")
 
@@ -80,6 +77,12 @@ if menu == "🏠 Dashboard":
 
     pending_tasks = total_tasks - completed_tasks
 
+    total_hours = sum(
+        task["study_time"]
+        for task in tasks
+        if not task.get("completed", False)
+    )
+
     if total_tasks > 0:
         overall_progress = completed_tasks / total_tasks
     else:
@@ -89,13 +92,22 @@ if menu == "🏠 Dashboard":
     col1, col2, col3, col4 = st.columns(4)
 
     with col1:
-        st.metric("📚 Total Tasks", total_tasks)
+        st.metric(
+            "📚 Total Tasks",
+            total_tasks
+        )
 
     with col2:
-        st.metric("⏳ Pending", pending_tasks)
+        st.metric(
+            "⏳ Pending",
+            pending_tasks
+        )
 
     with col3:
-        st.metric("✅ Completed", completed_tasks)
+        st.metric(
+            "⏱️ Pending Hours",
+            f"{total_hours:.1f}h"
+        )
 
     with col4:
         st.metric(
@@ -105,108 +117,394 @@ if menu == "🏠 Dashboard":
 
     st.divider()
 
-    # Overall progress
+    # Progress
     st.subheader("📈 Overall Progress")
 
     st.progress(overall_progress)
 
     st.write(
-        f"You have completed {completed_tasks} "
-        f"out of {total_tasks} tasks."
+        f"You have completed "
+        f"**{completed_tasks} out of {total_tasks} tasks**."
     )
 
     st.divider()
 
-    # Subject-wise progress
-    st.subheader("📚 Subject-wise Progress")
-
-    subjects = {}
-
-    for task in tasks:
-
-        subject = task["subject"]
-
-        if subject not in subjects:
-            subjects[subject] = {
-                "total": 0,
-                "completed": 0
-            }
-
-        subjects[subject]["total"] += 1
-
-        if task.get("completed", False):
-            subjects[subject]["completed"] += 1
-
-    if subjects:
-
-        columns = st.columns(len(subjects))
-
-        for column, (subject, data) in zip(
-            columns,
-            subjects.items()
-        ):
-
-            total = data["total"]
-            completed = data["completed"]
-
-            subject_progress = completed / total
-
-            with column:
-
-                st.markdown(f"### 📖 {subject}")
-
-                st.progress(subject_progress)
-
-                st.write(
-                    f"{completed}/{total} tasks completed"
-                )
-
-                st.write(
-                    f"Progress: "
-                    f"{subject_progress * 100:.0f}%"
-                )
-
-    else:
-
-        st.info(
-            "No tasks yet. Add your first task!"
-        )
-
-    st.divider()
-
-    # Priority tasks
-    st.subheader("🔥 Priority Tasks")
+    # Task completion
+    st.subheader("✅ Task Management")
 
     if tasks:
 
         for task in tasks:
 
+            col1, col2, col3, col4 = st.columns(
+                [0.5, 3, 1, 1]
+            )
+
+            with col1:
+
+                completed = st.checkbox(
+                    "",
+                    value=task.get("completed", False),
+                    key=f"complete_{task['id']}"
+                )
+
+                if completed != task.get("completed", False):
+
+                    mark_completed(
+                        task["id"],
+                        completed
+                    )
+
+                    st.rerun()
+
+            with col2:
+
+                status = (
+                    "~~"
+                    if task.get("completed", False)
+                    else ""
+                )
+
+                st.write(
+                    f"**{task['subject']}** — "
+                    f"{task['topic']}"
+                )
+
+            with col3:
+
+                level = get_priority_level(
+                    task["priority_score"]
+                )
+
+                st.write(
+                    f"🔥 {level}"
+                )
+
+            with col4:
+
+                st.write(
+                    f"⏱️ {task['study_time']}h"
+                )
+
+    else:
+
+        st.info(
+            "No tasks yet. Add your first academic task!"
+        )
+
+
+# ==================================================
+# ANALYTICS
+# ==================================================
+
+elif menu == "📊 Analytics":
+
+    st.title("📊 Academic Analytics")
+
+    st.caption(
+        "Data-driven insights from your academic workload."
+    )
+
+    st.divider()
+
+    if not tasks:
+
+        st.info(
+            "Add some academic tasks to generate analytics."
+        )
+
+    else:
+
+        # ------------------------------------------
+        # BASIC CALCULATIONS
+        # ------------------------------------------
+
+        total_tasks = len(tasks)
+
+        completed_tasks = sum(
+            1 for task in tasks
+            if task.get("completed", False)
+        )
+
+        pending_tasks = total_tasks - completed_tasks
+
+        total_study_hours = sum(
+            task["study_time"]
+            for task in tasks
+        )
+
+        pending_hours = sum(
+            task["study_time"]
+            for task in tasks
+            if not task.get("completed", False)
+        )
+
+        high_priority = sum(
+            1 for task in tasks
+            if get_priority_level(
+                task["priority_score"]
+            ) == "HIGH"
+            and not task.get("completed", False)
+        )
+
+        if total_tasks > 0:
+            completion_rate = (
+                completed_tasks / total_tasks
+            ) * 100
+        else:
+            completion_rate = 0
+
+        # ------------------------------------------
+        # TOP METRICS
+        # ------------------------------------------
+
+        col1, col2, col3, col4 = st.columns(4)
+
+        with col1:
+            st.metric(
+                "📚 Total Tasks",
+                total_tasks
+            )
+
+        with col2:
+            st.metric(
+                "✅ Completed",
+                completed_tasks
+            )
+
+        with col3:
+            st.metric(
+                "⏱️ Pending Study",
+                f"{pending_hours:.1f}h"
+            )
+
+        with col4:
+            st.metric(
+                "🔥 High Priority",
+                high_priority
+            )
+
+        st.divider()
+
+        # ------------------------------------------
+        # COMPLETION ANALYTICS
+        # ------------------------------------------
+
+        st.subheader("📈 Completion Analytics")
+
+        completion_data = {
+            "Status": [
+                "Completed",
+                "Pending"
+            ],
+            "Tasks": [
+                completed_tasks,
+                pending_tasks
+            ]
+        }
+
+        st.bar_chart(
+            completion_data,
+            x="Status",
+            y="Tasks"
+        )
+
+        st.write(
+            f"**Completion Rate:** "
+            f"{completion_rate:.1f}%"
+        )
+
+        st.divider()
+
+        # ------------------------------------------
+        # SUBJECT WORKLOAD
+        # ------------------------------------------
+
+        st.subheader("📚 Subject-wise Workload")
+
+        subject_hours = {}
+
+        for task in tasks:
+
+            subject = task["subject"]
+
+            if subject not in subject_hours:
+                subject_hours[subject] = 0
+
+            subject_hours[subject] += task["study_time"]
+
+        if subject_hours:
+
+            subject_data = {
+                "Subject": list(
+                    subject_hours.keys()
+                ),
+                "Study Hours": list(
+                    subject_hours.values()
+                )
+            }
+
+            st.bar_chart(
+                subject_data,
+                x="Subject",
+                y="Study Hours"
+            )
+
+        st.divider()
+
+        # ------------------------------------------
+        # SUBJECT PROGRESS
+        # ------------------------------------------
+
+        st.subheader("📊 Subject-wise Progress")
+
+        subjects = {}
+
+        for task in tasks:
+
+            subject = task["subject"]
+
+            if subject not in subjects:
+
+                subjects[subject] = {
+                    "total": 0,
+                    "completed": 0
+                }
+
+            subjects[subject]["total"] += 1
+
             if task.get("completed", False):
-                status = "✅"
-            else:
-                status = "⏳"
+
+                subjects[subject]["completed"] += 1
+
+        for subject, data in subjects.items():
+
+            total = data["total"]
+
+            completed = data["completed"]
+
+            progress = completed / total
+
+            st.write(
+                f"**{subject}** — "
+                f"{completed}/{total} completed "
+                f"({progress * 100:.0f}%)"
+            )
+
+            st.progress(progress)
+
+        st.divider()
+
+        # ------------------------------------------
+        # PRIORITY DISTRIBUTION
+        # ------------------------------------------
+
+        st.subheader("🔥 Priority Distribution")
+
+        priority_counts = {
+            "HIGH": 0,
+            "MEDIUM": 0,
+            "LOW": 0
+        }
+
+        for task in tasks:
 
             level = get_priority_level(
                 task["priority_score"]
             )
 
-            st.write(
-                f"{status} **{task['subject']}** — "
-                f"{task['topic']} | "
-                f"Priority: **{level}** | "
-                f"Score: **{task['priority_score']}**"
+            priority_counts[level] += 1
+
+        priority_data = {
+            "Priority": list(
+                priority_counts.keys()
+            ),
+            "Tasks": list(
+                priority_counts.values()
             )
+        }
 
-    else:
-
-        st.info(
-            "No tasks available."
+        st.bar_chart(
+            priority_data,
+            x="Priority",
+            y="Tasks"
         )
 
+        st.divider()
 
-# ==========================================
+        # ------------------------------------------
+        # DEADLINE RISK
+        # ------------------------------------------
+
+        st.subheader("⚠️ Deadline Risk")
+
+        risky_tasks = []
+
+        for task in tasks:
+
+            if task.get("completed", False):
+                continue
+
+            if task["days_left"] <= 2:
+
+                risky_tasks.append(task)
+
+        if risky_tasks:
+
+            st.warning(
+                f"{len(risky_tasks)} task(s) have "
+                f"deadlines within 2 days."
+            )
+
+            for task in risky_tasks:
+
+                st.write(
+                    f"⚠️ **{task['subject']}** — "
+                    f"{task['topic']} | "
+                    f"{task['days_left']} day(s) left | "
+                    f"{task['study_time']}h"
+                )
+
+        else:
+
+            st.success(
+                "No immediate deadline risks detected."
+            )
+
+        st.divider()
+
+        # ------------------------------------------
+        # AI INSIGHT
+        # ------------------------------------------
+
+        st.subheader("🤖 Academic Insight")
+
+        if high_priority > 0:
+
+            st.info(
+                f"You currently have **{high_priority} "
+                f"high-priority pending task(s)**. "
+                f"Consider addressing these before "
+                f"lower-priority work."
+            )
+
+        elif pending_tasks > 0:
+
+            st.info(
+                "Your workload currently contains "
+                "no high-priority pending tasks."
+            )
+
+        else:
+
+            st.success(
+                "🎉 All tasks are completed!"
+            )
+
+
+# ==================================================
 # ADD TASK
-# ==========================================
+# ==================================================
 
 elif menu == "➕ Add Task":
 
@@ -283,17 +581,17 @@ elif menu == "➕ Add Task":
             st.rerun()
 
 
-# ==========================================
+# ==================================================
 # STUDY PLANNER
-# ==========================================
+# ==================================================
 
 elif menu == "📅 Study Planner":
 
     st.header("📅 AI Personalized Study Planner")
 
     st.write(
-        "Tell CampusAssist AI how much time you "
-        "have today."
+        "Tell CampusAssist AI how much time "
+        "you have today."
     )
 
     available_hours = st.number_input(
@@ -319,7 +617,9 @@ elif menu == "📅 Study Planner":
                     available_hours
                 )
 
-                st.subheader("📋 Your Study Plan")
+                st.subheader(
+                    "📋 Your Study Plan"
+                )
 
                 st.write(study_plan)
 
@@ -332,17 +632,17 @@ elif menu == "📅 Study Planner":
                 st.caption(str(e))
 
 
-# ==========================================
+# ==================================================
 # AI EXPLAINER
-# ==========================================
+# ==================================================
 
 elif menu == "🤖 AI Explainer":
 
     st.header("🤖 AI Topic Explainer")
 
     st.write(
-        "Ask CampusAssist AI to explain an "
-        "academic topic."
+        "Ask CampusAssist AI to explain "
+        "an academic topic."
     )
 
     topic = st.text_input(
@@ -398,9 +698,9 @@ elif menu == "🤖 AI Explainer":
                     st.caption(str(e))
 
 
-# ==========================================
+# ==================================================
 # AI RECOMMENDATIONS
-# ==========================================
+# ==================================================
 
 elif menu == "💡 AI Recommendations":
 
@@ -408,8 +708,7 @@ elif menu == "💡 AI Recommendations":
 
     st.write(
         "CampusAssist AI analyzes your pending "
-        "workload and provides personalized "
-        "recommendations."
+        "workload and provides personalized recommendations."
     )
 
     if st.button(
@@ -442,9 +741,65 @@ elif menu == "💡 AI Recommendations":
                 st.caption(str(e))
 
 
-# ==========================================
+# ==================================================
+# QUICK REVISION
+# ==================================================
+
+elif menu == "📝 Quick Revision":
+
+    st.header("📝 AI Quick Revision")
+
+    st.write(
+        "Generate a 5-minute revision sheet "
+        "for any academic topic."
+    )
+
+    revision_topic = st.text_input(
+        "📖 Enter Topic",
+        placeholder="e.g. Kirchhoff's Laws"
+    )
+
+    if st.button(
+        "🧠 Generate Revision Sheet",
+        use_container_width=True
+    ):
+
+        if not revision_topic:
+
+            st.warning(
+                "Please enter a topic first."
+            )
+
+        else:
+
+            with st.spinner(
+                "🧠 Creating your revision sheet..."
+            ):
+
+                try:
+
+                    revision = generate_revision(
+                        revision_topic
+                    )
+
+                    st.subheader(
+                        f"📚 {revision_topic} — Quick Revision"
+                    )
+
+                    st.write(revision)
+
+                except Exception as e:
+
+                    st.error(
+                        "Unable to generate revision sheet."
+                    )
+
+                    st.caption(str(e))
+
+
+# --------------------------------------------------
 # FOOTER
-# ==========================================
+# --------------------------------------------------
 
 st.divider()
 
