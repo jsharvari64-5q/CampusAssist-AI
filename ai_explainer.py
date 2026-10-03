@@ -6,16 +6,21 @@ load_dotenv()
 
 API_KEY = os.getenv("OPENAI_API_KEY")
 
-if not API_KEY:
-    raise ValueError(
-        "OPENAI_API_KEY is missing. "
-        "Please check your .env file."
-    )
+client = None
 
-client = OpenAI(api_key=API_KEY)
+if API_KEY:
+    client = OpenAI(api_key=API_KEY)
 
 
 def ask_ai(prompt):
+
+    if client is None:
+        return (
+            "⚠️ AI features are currently unavailable because "
+            "an OpenAI API key has not been configured. "
+            "Please configure OPENAI_API_KEY to enable this feature."
+        )
+
     response = client.responses.create(
         model="gpt-4.1-mini",
         input=prompt
@@ -23,10 +28,6 @@ def ask_ai(prompt):
 
     return response.output_text
 
-
-# ==========================================
-# AI TOPIC EXPLAINER
-# ==========================================
 
 def explain_topic(topic, level):
 
@@ -54,10 +55,6 @@ for a college student.
 
     return ask_ai(prompt)
 
-
-# ==========================================
-# AI PERSONALIZED STUDY PLAN
-# ==========================================
 
 def generate_study_plan(tasks, available_hours):
 
@@ -95,48 +92,18 @@ Requirements:
 1. Prioritize urgent and important tasks.
 2. Consider difficulty.
 3. Consider days remaining.
-4. Do not exceed the available study time.
+4. Do not exceed available study time.
 5. Include short breaks.
 6. Give a clear timetable.
 7. Explain why each task was selected.
 8. Include a final quick-review session.
-9. If the available time is insufficient, clearly identify
-   what should be postponed.
-
-Use this format:
-
-## Today's Study Plan
-
-### Session 1
-Subject:
-Topic:
-Duration:
-Reason:
-
-### Break
-
-### Session 2
-Subject:
-Topic:
-Duration:
-Reason:
-
-### Final Revision
-Duration:
-What to revise:
-
-### Priority for Tomorrow
-List the remaining important tasks.
+9. If available time is insufficient, identify what should be postponed.
 
 Keep the plan practical for a college student.
 """
 
     return ask_ai(prompt)
 
-
-# ==========================================
-# AI STUDY RECOMMENDATIONS
-# ==========================================
 
 def generate_recommendations(tasks):
 
@@ -169,15 +136,13 @@ Analyze the student's academic workload:
 
 {task_text}
 
-Give personalized recommendations.
-
-Analyze:
+Give personalized recommendations about:
 
 1. Most urgent task
 2. Most difficult task
 3. Workload balance
-4. Possible deadline risks
-5. What the student should study first
+4. Deadline risks
+5. What to study first
 6. What can be postponed
 7. How to improve consistency
 8. One practical recommendation for tomorrow
@@ -187,41 +152,6 @@ Keep the recommendations concise and actionable.
 
     return ask_ai(prompt)
 
-
-# ==========================================
-# AI TASK ANALYZER
-# ==========================================
-
-def analyze_task(subject, topic, difficulty, importance, days_left):
-
-    prompt = f"""
-You are CampusAssist AI.
-
-Analyze this academic task:
-
-Subject: {subject}
-Topic: {topic}
-Difficulty: {difficulty}/5
-Importance: {importance}/5
-Days Left: {days_left}
-
-Return:
-
-1. Urgency level
-2. Difficulty assessment
-3. Recommended study approach
-4. Suggested number of study sessions
-5. One common mistake to avoid
-
-Keep the answer concise.
-"""
-
-    return ask_ai(prompt)
-
-
-# ==========================================
-# AI QUICK REVISION
-# ==========================================
 
 def generate_revision(topic):
 
