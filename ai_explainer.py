@@ -13,20 +13,28 @@ if API_KEY:
 
 
 def ask_ai(prompt):
+    """Send a prompt to OpenAI if an API key is available."""
 
     if client is None:
         return (
-            "⚠️ AI features are currently unavailable because "
-            "an OpenAI API key has not been configured. "
-            "Please configure OPENAI_API_KEY to enable this feature."
+            "⚠️ AI features are currently unavailable.\n\n"
+            "No OpenAI API key has been configured. "
+            "The rest of CampusAssist AI can still be used normally."
         )
 
-    response = client.responses.create(
-        model="gpt-4.1-mini",
-        input=prompt
-    )
+    try:
+        response = client.responses.create(
+            model="gpt-4.1-mini",
+            input=prompt
+        )
 
-    return response.output_text
+        return response.output_text
+
+    except Exception as e:
+        return (
+            "⚠️ Unable to connect to the AI service right now.\n\n"
+            "Please check the API configuration and try again."
+        )
 
 
 def explain_topic(topic, level):
