@@ -1,44 +1,46 @@
-# 🎓 CampusAssist AI
 
-### AI-Powered Academic Assistant for Students
+# CampusAssist AI 🎓
 
-CampusAssist AI is a Streamlit-based academic assistant that helps students organize their workload, prioritize tasks, create personalized study plans, track progress, and understand difficult academic topics with AI.
+An intelligent academic productivity assistant designed to help students organize their workload, prioritize tasks, track progress, and plan their study time effectively.
 
-## 🚀 Features
+## 🚀 Overview
 
-* 🔥 **Smart Priority Engine** — Prioritizes tasks using difficulty, importance, and deadline.
-* 📅 **AI Personalized Study Planner** — Generates a study strategy based on available study time and pending tasks.
-* 📚 **Subject-wise Progress** — Tracks academic progress across different subjects.
-* 📊 **Student Dashboard** — Displays tasks, completion status, and overall progress.
-* 🤖 **AI Topic Explainer** — Explains academic concepts according to the student's learning level.
-* 💡 **AI Study Recommendations** — Analyzes pending workload and provides practical recommendations.
-* ➕ **Interactive Task Management** — Add subjects, topics, deadlines, difficulty, importance, and study time.
+Students often struggle to decide what to study first, how to manage deadlines, and how to balance different subjects.
+
+**CampusAssist AI** addresses this problem by combining task management, priority-based decision making, analytics, and AI-powered academic assistance in one simple application.
+
+## ✨ Features
+
+* 📋 **Task Management** — Add and manage academic tasks.
+* 🎯 **Smart Priority Engine** — Calculates task priority using difficulty, importance, urgency, and available study time.
+* 📊 **Analytics Dashboard** — Visualizes workload, progress, priorities, and deadline risks.
+* 📅 **Study Planner** — Helps organize available study time around pending tasks.
+* 🤖 **AI Explainer** — Provides structured explanations of academic topics.
+* 💡 **AI Recommendations** — Gives personalized academic recommendations.
+* 🔄 **Quick Revision** — Generates concise revision material for selected topics.
+* ✅ **Progress Tracking** — Mark tasks as completed and monitor overall progress.
+
+## 🧠 How It Works
+
+CampusAssist AI evaluates each academic task using:
+
+* **Difficulty**
+* **Importance**
+* **Days remaining**
+* **Estimated study time**
+
+These factors are combined to generate a **priority score**, helping students identify which tasks deserve attention first.
 
 ## 🛠️ Tech Stack
 
 * **Python**
 * **Streamlit**
-* **OpenAI API**
+* **SQLite**
+* **OpenAI-compatible AI integration**
 * **python-dotenv**
 * **Git & GitHub**
 
-## 🧠 How It Works
-
-```text
-Student Academic Tasks
-        ↓
-Priority Engine
-        ↓
-Workload Analysis
-        ↓
-AI Study Planner
-        ↓
-Personalized Recommendations
-        ↓
-Progress Tracking
-```
-
-## 📂 Project Structure
+## 📁 Project Structure
 
 ```text
 CampusAssist-AI/
@@ -46,48 +48,64 @@ CampusAssist-AI/
 ├── app.py
 ├── priority_engine.py
 ├── ai_explainer.py
-├── .env
-├── .gitignore
-└── README.md
+├── database.py
+├── requirements.txt
+├── README.md
+└── .gitignore
 ```
 
-## ⚙️ Installation
+## 🎯 Problem Statement
 
-### 1. Clone the repository
+Students manage multiple subjects, assignments, exams, and deadlines simultaneously. Traditional to-do lists do not consider factors such as difficulty, urgency, or academic importance.
 
-```bash
-git clone YOUR_GITHUB_REPOSITORY_URL
-cd CampusAssist-AI
+CampusAssist AI provides a more intelligent approach by helping students decide **what to study, when to study it, and what requires the most attention**.
+
+## 🌟 Impact
+
+CampusAssist AI aims to make academic planning:
+
+* More organized
+* More personalized
+* More data-driven
+* Easier to understand
+* More focused on urgent and important work
+
+## 🔮 Future Improvements
+
+* Personalized learning recommendations
+* Calendar and timetable integration
+* Exam and assignment reminders
+* Performance prediction
+* More advanced AI-based study planning
+* Student performance insights
+* Mobile-friendly improvements
+
+## 🏆 Hackathon
+
+Built for the **ML Empowerment Build Challenge 3.0**.
+
+## 👩‍💻 Developer
+
+**Sharvari Joshi**
+
+First-year Computer Science Engineering student interested in Python, software development, AI, and Data Science.
+
 ```
 
-### 2. Install dependencies
+### STEP 4.3 — Save it
 
-```bash
-pip install streamlit openai python-dotenv
+After pasting:
+
+1. Scroll to the bottom.
+2. Click **Commit changes**.
+3. Keep the default commit message.
+4. Click **Commit changes** again.
+
+Then **stop**.
+
+Reply:
+
+**`README DONE`**
+
+and I'll give you the next single step.
 ```
-
-### 3. Configure your API key
-
-Create a `.env` file:
-
-```text
-OPENAI_API_KEY=your_api_key_here
-```
-
-Never share or upload your API key.
-
-### 4. Run the application
-
-```bash
-python -m streamlit run app.py
-```
-
-The application will open in your browser.
-
-## 🎯 Project Goal
-
-Students often have multiple subjects, deadlines, assignments, and difficult topics to manage simultaneously.
-
-CampusAssist AI brings these needs together into one platform:
-
-**Pla**
