@@ -1,111 +1,104 @@
+# 🎓 CampusAssist AI
 
-# CampusAssist AI 🎓
+### Intelligent Academic Productivity Assistant
 
-An intelligent academic productivity assistant designed to help students organize their workload, prioritize tasks, track progress, and plan their study time effectively.
+CampusAssist AI is a smart academic productivity application designed to help students **organize tasks, prioritize their workload, manage deadlines, track progress, and create personalized study plans**.
 
-## 🚀 Overview
+The project combines **Python, Streamlit, SQLite, and AI-powered features** into a simple student-focused dashboard.
 
-Students often struggle to decide what to study first, how to manage deadlines, and how to balance different subjects.
+---
 
-**CampusAssist AI** addresses this problem by combining task management, priority-based decision making, analytics, and AI-powered academic assistance in one simple application.
+## 🚀 Features
 
-## ✨ Features
+### 📋 Academic Task Management
 
-* 📋 **Task Management** — Add and manage academic tasks.
-* 🎯 **Smart Priority Engine** — Calculates task priority using difficulty, importance, urgency, and available study time.
-* 📊 **Analytics Dashboard** — Visualizes workload, progress, priorities, and deadline risks.
-* 📅 **Study Planner** — Helps organize available study time around pending tasks.
-* 🤖 **AI Explainer** — Provides structured explanations of academic topics.
-* 💡 **AI Recommendations** — Gives personalized academic recommendations.
-* 🔄 **Quick Revision** — Generates concise revision material for selected topics.
-* ✅ **Progress Tracking** — Mark tasks as completed and monitor overall progress.
+* Add academic tasks by subject and topic
+* Set difficulty and importance
+* Specify remaining days
+* Estimate required study time
+* Track task completion
 
-## 🧠 How It Works
+### 🧠 Intelligent Priority Engine
 
-CampusAssist AI evaluates each academic task using:
+CampusAssist AI calculates a priority score using:
 
-* **Difficulty**
-* **Importance**
-* **Days remaining**
-* **Estimated study time**
+* Difficulty
+* Academic importance
+* Deadline urgency
+* Estimated study workload
 
-These factors are combined to generate a **priority score**, helping students identify which tasks deserve attention first.
+Tasks are automatically classified as:
 
-## 🛠️ Tech Stack
+* 🔴 HIGH
+* 🟡 MEDIUM
+* 🟢 LOW
 
-* **Python**
-* **Streamlit**
-* **SQLite**
-* **OpenAI-compatible AI integration**
-* **python-dotenv**
-* **Git & GitHub**
+This helps students decide **what to study first**.
 
-## 📁 Project Structure
+### 📊 Academic Analytics
+
+The analytics dashboard provides:
+
+* Overall completion percentage
+* Total academic workload
+* High-priority task count
+* Deadline-risk detection
+* Subject-wise workload
+* Subject-wise progress
+* Priority distribution
+* Academic insights
+
+### 📅 Smart Study Planner
+
+Students can enter the number of hours available for the day.
+
+CampusAssist AI then creates a study plan based on:
+
+* Task priority
+* Deadlines
+* Difficulty
+* Importance
+* Estimated study time
+
+The application also provides an **offline planning fallback** when AI is unavailable.
+
+### 🤖 AI Explainer
+
+Students can enter an academic topic and receive a structured explanation containing:
+
+1. Simple definition
+2. Core concept
+3. Step-by-step explanation
+4. Example
+5. Common mistakes
+6. Quick revision points
+7. Practice questions
+
+### 💡 AI Recommendations
+
+The system analyzes the student's workload and provides recommendations about:
+
+* Most urgent tasks
+* Difficult topics
+* Workload balance
+* Deadline risks
+* Study order
+* Tasks that can be postponed
+* Consistency improvement
+
+### 🔄 Quick Revision
+
+Generate a concise revision sheet containing:
+
+* Key concepts
+* Important formulas or facts
+* Common mistakes
+* Quick questions
+* Memory tricks
+
+---
+
+## 🏗️ System Architecture
 
 ```text
-CampusAssist-AI/
-│
-├── app.py
-├── priority_engine.py
-├── ai_explainer.py
-├── database.py
-├── requirements.txt
-├── README.md
-└── .gitignore
-```
-
-## 🎯 Problem Statement
-
-Students manage multiple subjects, assignments, exams, and deadlines simultaneously. Traditional to-do lists do not consider factors such as difficulty, urgency, or academic importance.
-
-CampusAssist AI provides a more intelligent approach by helping students decide **what to study, when to study it, and what requires the most attention**.
-
-## 🌟 Impact
-
-CampusAssist AI aims to make academic planning:
-
-* More organized
-* More personalized
-* More data-driven
-* Easier to understand
-* More focused on urgent and important work
-
-## 🔮 Future Improvements
-
-* Personalized learning recommendations
-* Calendar and timetable integration
-* Exam and assignment reminders
-* Performance prediction
-* More advanced AI-based study planning
-* Student performance insights
-* Mobile-friendly improvements
-
-## 🏆 Hackathon
-
-Built for the **ML Empowerment Build Challenge 3.0**.
-
-## 👩‍💻 Developer
-
-**Sharvari Joshi**
-
-First-year Computer Science Engineering student interested in Python, software development, AI, and Data Science.
-
-```
-
-### STEP 4.3 — Save it
-
-After pasting:
-
-1. Scroll to the bottom.
-2. Click **Commit changes**.
-3. Keep the default commit message.
-4. Click **Commit changes** again.
-
-Then **stop**.
-
-Reply:
-
-**`README DONE`**
-
-and I'll give you the next single step.
 ```
